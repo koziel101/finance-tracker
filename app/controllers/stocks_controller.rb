@@ -1,19 +1,14 @@
 class StocksController < ApplicationController
   
   def search
-    if params[:stock].present?
-      @stock = Stock.new_from_lookup(params[:stock])
-      if @stock
-        respond_to do|format|
-          format.js { render partial: 'users/result' }
-        end
-      else
-        flash[:danger] = "Stock is invalid "
-        redirect_to my_portfolio_path
-      end
+    if params[:stock].blank?
+      flash.now[:danger] = "You have entered an empty string"
     else
-      flash[:danger] = "The stock can't be blank"
-      redirect_to my_portfolio_path
+      @stock = Stock.new_from_lookup(params[:stock])
+      flash.now[:danger] = "The Stock searched is invalid" unless @stock
+    end
+    respond_to do|format|
+      format.js { render partial: 'users/result' }
     end
   end
 end
